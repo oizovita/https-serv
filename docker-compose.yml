@@ -2,7 +2,7 @@ version: '0.0'
 services:
   nginx:
     container_name: "internship"
-    image: nginx:1.16
+    image: nginx:1.16-alpine
     restart: always
     ports:
       - "80:80"

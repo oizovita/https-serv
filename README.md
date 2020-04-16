@@ -1,7 +1,12 @@
 # For start
 ## Install docker
+### For ubuntu
 ```sh
-./ubuntu-docker-install.sh
+./ubuntu-docker-install.sh ubuntu
+```
+### For debian
+```sh
+./ubuntu-docker-install.sh debian
 ```
 or
 ```

@@ -35,4 +35,5 @@ services:
       - "traefik.http.routers.whoami.tls.certresolver=myresolver"
       - "traefik.http.middlewares.test-redirectscheme.redirectscheme.scheme=https"
       - "traefik.http.middlewares.test-redirectscheme.redirectscheme.permanent=true"
+      - "traefik.http.middlewares.test-redirectscheme.redirectscheme.port=443"
 

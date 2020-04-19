@@ -12,21 +12,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.toml:/traefik.toml
-      - ./acme.json:/acme.json
-    container_name: traefik
+      - "./letsencrypt:/letsencrypt"
 
-  web:
-    image: nginx:1.17-alpine
-    restart: unless-stopped
-    networks:
-      - proxy
-    labels:
-      - "traefik.docker.network=proxy"
-      - "traefik.basic.frontend.rule=Host:${domain}"
-      - "traefik.basic.protocol=http"
-      - "traefik.enable=true"
-    volumes:
-      - ./logs/:/var/log/nginx/
+
+    whoami:
+      image: "containous/whoami"
+      container_name: "simple-service"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.whoami.rule=Host(`${domain}`)"
+        - "traefik.http.routers.whoami.entrypoints=websecure"
+        - "traefik.http.routers.whoami.tls.certresolver=myresolver"
 
 networks:
   proxy:

@@ -24,10 +24,15 @@ services:
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-  
-  whoami:
-    image: "containous/whoami"
-    container_name: "simple-service"
+
+  nginx:
+    container_name: "internship"
+    image: nginx:1.16
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./logs/:/var/log/nginx/
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`${domain}`)"

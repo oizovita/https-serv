@@ -1,8 +1,9 @@
-version: '3.4'
+version: "3.3"
 
 services:
+
   traefik:
-    image: traefik:v1.7.24
+    image: "traefik:v2.2"
     container_name: "traefik"
     command:
       - "--api.insecure=true"
@@ -15,12 +16,12 @@ services:
       - "--certificatesresolvers.myresolver.acme.email=${email}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - "./letsencrypt:/letsencrypt"
-
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   whoami:
     image: "containous/whoami"
@@ -30,3 +31,6 @@ services:
       - "traefik.http.routers.whoami.rule=Host(`${domain}`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.test-redirectscheme.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.test-redirectscheme.redirectscheme.permanent=true"
+

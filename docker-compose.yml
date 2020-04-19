@@ -29,8 +29,6 @@ services:
     container_name: "internship"
     image: nginx:1.16
     restart: always
-    ports:
-      - "80:80"
     volumes:
       - ./logs/:/var/log/nginx/
     labels:

@@ -22,7 +22,7 @@ services:
       - proxy
     labels:
       - "traefik.docker.network=proxy"
-      - "traefik.basic.frontend.rule=Host:your_domain"
+      - "traefik.basic.frontend.rule=Host:${domain}"
       - "traefik.basic.protocol=http"
       - "traefik.enable=true"
     volumes:

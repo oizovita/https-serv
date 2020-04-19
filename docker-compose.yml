@@ -1,40 +1,22 @@
-version: "3.3"
-
+version: '2'
 services:
-
-  traefik:
-    image: "traefik:v2.2"
-    container_name: "traefik"
-    command:
-      #- "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=${email}"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+  nginx:
+    image: nginx:alpine
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - 'traefik.frontend.rule=Host:www.website.com'
+      - "traefik.port=80"
+    volumes:
+      - ./website:/usr/share/nginx/html
+  proxy:
+    image: traefik
+    command: --web -c /etc/traefik/traefik.toml --LOGLEVEL=debug
+    restart: always
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     volumes:
-      - "./letsencrypt:/letsencrypt"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-
-  nginx:
-    container_name: "internship"
-    image: nginx:1.16
-    restart: always
-    volumes:
-      - ./logs/:/var/log/nginx/
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`${domain}`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
-      - "traefik.frontend.headers.SSLRedirect=true"
-
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/etc/traefik/traefik.toml
+      - /acme

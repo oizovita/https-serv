@@ -1,42 +1,33 @@
-version: "3.3"
+version: '3.4'
 
 services:
-
   traefik:
-    image: "traefik:v2.2"
-    container_name: "traefik"
-    command:
-      #- "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=${email}"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    image: traefik:v1.7.24
+    restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - 80:80
+      - 443:443
+    networks:
+      - proxy
     volumes:
-      - "./letsencrypt:/letsencrypt"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/traefik.toml
+      - ./acme.json:/acme.json
+    container_name: traefik
 
-  nginx:
-    container_name: "internship"
-    image: nginx:1.16
-    restart: always
-    ports:
-      - "80:80"
+  web:
+    image: nginx:1.17-alpine
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.docker.network=proxy"
+      - "traefik.basic.frontend.rule=Host:your_domain"
+      - "traefik.basic.protocol=http"
+      - "traefik.enable=true"
     volumes:
       - ./logs/:/var/log/nginx/
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`${domain}`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
-      - "traefik.frontend.headers.SSLRedirect=true"
 
+networks:
+  proxy:
+    external: true

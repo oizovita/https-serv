@@ -13,7 +13,7 @@ services:
       - "traefik.frontend.rule=Host:${domain}"
 
 
-  networks:
-    default:
-      external:
-        name: traefik_webgateway
+networks:
+  default:
+    external:
+      name: traefik_webgateway

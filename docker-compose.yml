@@ -2,14 +2,12 @@ version: "3.3"
 
 services:
 
-nginx:
+  nginx:
     container_name: "nginx"
     image: nginx:1.16
     restart: always
     ports:
       - "80:80"
-    links:
-      - backend
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`${domain}`)"

@@ -21,6 +21,9 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"
+    networks:
+      - whoami
+    restart: unless-stopped
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -28,9 +31,16 @@ services:
   whoami:
     image: "containous/whoami"
     container_name: "simple-service"
+    networks:
+      - whoami
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`${domain}`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=myresolver"
+
+networks:
+  whoami:
+    driver: bridge
+    internal: false
 
